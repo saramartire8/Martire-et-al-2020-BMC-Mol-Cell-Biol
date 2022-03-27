@@ -1,4 +1,4 @@
-This repository contains code used in the upstream and downstream analyses in the paper. You will find scripts for processing ChIP-Seq, RNA-Seq and ATAC-Seq data as well as R code for generating figures.
+This repository contains code used in the upstream and downstream analyses in the [paper](https://bmcmolcellbiol.biomedcentral.com/articles/10.1186/s12860-020-00296-9). You will find scripts for processing ChIP-Seq, RNA-Seq and ATAC-Seq data as well as R code for generating figures.
 
 **Data availability**
 
