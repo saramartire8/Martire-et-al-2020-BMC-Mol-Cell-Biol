@@ -1,0 +1,207 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf500
+{\fonttbl\f0\fnil\fcharset0 Monaco;\f1\fmodern\fcharset0 Courier;\f2\fnil\fcharset0 Menlo-Regular;
+}
+{\colortbl;\red255\green255\blue255;\red22\green21\blue22;\red255\green255\blue255;\red152\green0\blue15;
+\red22\green21\blue22;\red22\green21\blue22;\red20\green19\blue18;\red246\green246\blue246;\red27\green31\blue34;
+\red244\green246\blue249;\red27\green31\blue34;\red244\green246\blue249;\red0\green0\blue0;\red252\green61\blue7;
+\red27\green29\blue31;\red152\green66\blue3;\red38\green38\blue38;\red242\green242\blue242;\red7\green64\blue153;
+\red19\green85\blue52;\red25\green0\blue135;}
+{\*\expandedcolortbl;;\cssrgb\c11373\c10980\c11373;\cssrgb\c100000\c100000\c100000;\cssrgb\c66667\c6667\c6667;
+\cssrgb\c11373\c10980\c11373;\cssrgb\c11373\c10980\c11373\c3922;\cssrgb\c10196\c9804\c9020;\cssrgb\c97255\c97255\c97255;\cssrgb\c14118\c16078\c18039;
+\cssrgb\c96471\c97255\c98039;\cssrgb\c14118\c16078\c18039;\cssrgb\c96471\c97255\c98039;\csgray\c0;\cssrgb\c100000\c33333\c0;
+\cssrgb\c14118\c15294\c16078;\cssrgb\c66667\c33333\c0;\cssrgb\c20000\c20000\c20000;\cssrgb\c96078\c96078\c96078;\cssrgb\c0\c33333\c66667;
+\cssrgb\c6667\c40000\c26667;\cssrgb\c13333\c6667\c60000;}
+\margl1440\margr1440\vieww19020\viewh10580\viewkind0
+\deftab720
+\pard\pardeftab720\sl340\partightenfactor0
+
+\f0\fs26 \cf2 \cb3 \expnd0\expndtw0\kerning0
+setwd(\cf4 "/work/GCRB/s164441/GSEA"\cf2 )\
+\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\fs24 \cf5 \cb6 \outl0\strokewidth0 \strokec5 if (!requireNamespace("BiocManager", quietly = TRUE))\cb1 \
+\cb6     install.packages("BiocManager")\
+\cb1 \
+\cb6 BiocManager::install("fgsea")\
+\pard\pardeftab720\sl340\partightenfactor0
+
+\fs26 \cf2 \cb3 \outl0\strokewidth0 \
+\pard\pardeftab720\sl420\partightenfactor0
+
+\f1\fs21\fsmilli10800 \cf7 \cb8 install.packages("
+\f0\fs26 \cf2 \cb3 fgsea
+\f1\fs21\fsmilli10800 \cf7 \cb8 ")
+\f0\fs26 \cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 library(fgsea)\
+\pard\pardeftab720\sl420\partightenfactor0
+
+\f1\fs21\fsmilli10800 \cf7 \cb8 install.packages("tidyverse")
+\f0\fs26 \cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 library(tidyverse)\
+\pard\pardeftab720\sl340\partightenfactor0
+
+\f2\fs23\fsmilli11900 \cf9 \cb10 \outl0\strokewidth0 \strokec9 install.packages(\cf11 \cb12 \outl0\strokewidth0 "\cf9 \cb10 \outl0\strokewidth0 \strokec9 DT")\
+library(DT)
+\f0\fs26 \cf2 \cb3 \outl0\strokewidth0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardeftab720\pardirnatural\partightenfactor0
+
+\f2\fs22 \cf13 \cb1 \kerning1\expnd0\expndtw0 \CocoaLigature0 #library(dplyr)\
+#library(tidyr)
+\f0\fs26 \cf2 \expnd0\expndtw0\kerning0
+\CocoaLigature1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 result<-read.delim(\cf4 "DESeq2_Sara_WT-H33KO-DO.txt"\cf2 ,stringsAsFactors = F, head = T)\cf2 \cb3 \
+result$ensembl_id <- gsub(\cf4 \cb3 "\cf14 \\\\\cf4 ..*"\cf2 \cb3 ,\cf4 \cb3 ""\cf2 \cb3 ,result$gene_name)
+\f2 \cf15 \cb1 \outl0\strokewidth0 \strokec15 \
+
+\f0 \cf2 \outl0\strokewidth0 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 # Load the pathways into a named list\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 pathways.hallmark <- gmtPathways(\cf4 "h.all.v7.0.symbols.gmt"\cf2 )\
+\pard\pardeftab720\sl360\partightenfactor0
+
+\f1 \cf17 \cb18 \outl0\strokewidth0 \strokec17 pathways.hallmark %>% \
+  head() %>% \
+  lapply(head)\
+\pard\pardeftab720\sl340\partightenfactor0
+
+\f0 \cf2 \cb1 \outl0\strokewidth0 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 # first create a table to map the fly/mouse/worm/etc gene IDs to human symbol:\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 library(biomaRt)\cb1 \
+\cb3 mart <- useDataset(\cf4 "mmusculus_gene_ensembl"\cf2 , mart=useMart(\cf4 "ensembl"\cf2 ))\cb1 \
+\cb3 bm <- getBM(attributes=c(\cf4 "ensembl_gene_id"\cf2 , \cf4 "hsapiens_homolog_associated_gene_name"\cf2 ), mart=mart) \cf19 %>%\cf2 \cb1 \
+\cb3       distinct() \cf19 %>%\cf2 \cb1 \
+\cb3       as_tibble() \cf19 %>%\cf2 \cb1 \
+\cb3       na_if(\cf4 ""\cf2 ) \cf19 %>%\cf2  \cb1 \
+\cb3       na.omit()\cb1 \
+\
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #adding the human id to he mouse results\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 result <- inner_join(result, bm, by=c(\cf4 "ensembl_id"\cf2 =\cf4 "ensembl_gene_id"\cf2 ))\cb1 \
+\
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 # get gene symbol and the test statistic\cf2 \cb1 \
+\cf16 \cb3 #if there are multiple test statistics for the same symbol here we are just averaging them.\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 res2 <- result \cf19 %>%\cf2  \cb1 \
+\cb3         dplyr::select(hsapiens_homolog_associated_gene_name, log2FoldChange) \cf19 %>%\cf2  \cb1 \
+\cb3         na.omit() \cf19 %>%\cf2  \cb1 \
+\cb3         distinct() \cf19 %>%\cf2  \cb1 \
+\cb3         group_by(hsapiens_homolog_associated_gene_name) \cf19 %>%\cf2  \cb1 \
+\cb3         summarize(stat=mean(log2FoldChange))\cb1 \
+\cb3 \uc0\u8203 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #converts two-column data frames to a named vector or list, using the first column as name and the second column as value.\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 ranks <- deframe(res2)\cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #run the fgsea algorithm with 1000 permutations:\cf2 \cb1 \
+\cf16 \cb3 #fgseaRes <- fgsea(pathways=go, stats=ranks, nperm=1000)\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 fgseaRes <- fgsea(pathways=pathways.hallmark, stats=ranks, nperm=\cf20 1000\cf2 )\cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #Tidy the results\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 fgseaResTidy <- fgseaRes \cf19 %>%\cf2 \cb1 \
+\cb3                 as_tibble() \cf19 %>%\cf2 \cb1 \
+\cb3                 arrange(desc(NES))\cb1 \
+\cb3 \uc0\u8203 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 # Show in a nice table:\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 fgseaResTidy \cf19 %>%\cf2  \cb1 \
+\cb3                 dplyr::select(-leadingEdge, -ES, -nMoreExtreme) \cf19 %>%\cf2  \cb1 \
+\cb3                 arrange(padj) \cf19 %>%\cf2  \cb1 \
+\cb3                 DT::datatable()\cb1 \
+\cb3 \uc0\u8203 \cb1 \
+\cb3 write_csv(fgseaResTidy[,c(\cf20 1\cf2 :\cf20 7\cf2 )], path = \cf4 "./DESeq2_Sara_WT-H33KO_hallmark_pathway.csv"\cf2 )\cb1 \
+\cb3 \uc0\u8203 \cb1 \
+\cb3 sum(fgseaRes[, padj < \cf20 0.05\cf2 ])\cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #Plot the normalized enrichment scores. Color the bar indicating whether or not the pathway was significant:\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 ggplot(fgseaResTidy, aes(reorder(pathway, NES), NES)) +\cb1 \
+\cb3        geom_col(aes(fill=padj<\cf20 0.05\cf2 )) +\cb1 \
+\cb3        scale_fill_manual(values = c(\cf4 "red"\cf2 , \cf4 "blue"\cf2 ))+\cb1 \
+\cb3        coord_flip() +\cb1 \
+\cb3        labs(x=\cf4 "Pathway"\cf2 , y=\cf4 "Normalized Enrichment Score"\cf2 ,\cb1 \
+\cb3        title=\cf4 "Hallmark Pathway NES from GSEA"\cf2 ) + \cb1 \
+\cb3        theme_minimal()\cb1 \
+\cb3 \uc0\u8203 \cb1 \
+\cb3 plotEnrichment(pathways.hallmark[[\cf4 "HALLMARK_P53_PATHWAY"\cf2 ]],ranks) +\cb1 \
+\cb3   labs(title=\cf4 "HALLMARK_P53_PATHWAY"\cf2 )\cb1 \
+\cb3 \uc0\u8203 dev.off()\cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 ######\cf2 \cb1 \
+\cf16 \cb3 #Clusterprofiler dotplot\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 library(clusterProfiler)\cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #The geneList contains three features:\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3   \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #numeric vector: fold change or other type of numerical variable\cf2 \cb1 \
+\cf16 \cb3 #named vector: every number was named by the corresponding gene ID\cf2 \cb1 \
+\cf16 \cb3 #sorted vector: number should be sorted in decreasing order\cf2 \cb1 \
+\cf16 \cb3 #Suppose you are importing your own data from a csv file and the file contains two columns, one for gene ID (no duplicated allowed) and another one for fold change, you can prepare your own geneList via the following command:\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 \uc0\u8203 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 ## feature 1: numeric vector\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 geneList <- res2$stat\cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 ## feature 2: named vector\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 names(geneList) <- as.character(res2$hsapiens_homolog_associated_gene_name)\cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 ## feature 3: decreasing order\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 geneList <- sort(geneList, decreasing = \cf21 TRUE\cf2 )\cb1 \
+\cb3 \uc0\u8203 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #Hallmark pathways\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 c5 <- read.gmt(\cf4 "h.all.v7.0.symbols.gmt"\cf2 )\cb1 \
+\cb3 \uc0\u8203 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #run GSEA\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 egmt2 <- GSEA(geneList, TERM2GENE=c5, verbose=\cf21 FALSE\cf2 ,nPerm = \cf20 1000\cf2 ,pvalueCutoff=\cf20 0.05\cf2 )\cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #head(egmt2)\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 \uc0\u8203 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 #p2 <- dotplot(egmt2,showCategory=15,x="enrichmentScore") + ggtitle(\'93H33KO\'94)\cf2 \cb1 \
+\cf16 \cb3 ####\cf2 \cb1 \
+\cf16 \cb3 #plot NES dot plot\cf2 \cb1 \
+\cf16 \cb3 ## count the gene number for both results\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 gene_count.x1 <- egmt2@result \cf19 %>%\cf2  group_by(ID) \cf19 %>%\cf2  summarise(count = sum(str_count(core_enrichment, \cf4 "/"\cf2 )) + \cf20 1\cf2 )\cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 ## merge with the original dataframes\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 dot_df.x1<- left_join(egmt2@result, gene_count.x1, by = \cf4 "ID"\cf2 ) \cf19 %>%\cf2  mutate(GeneRatio = count/setSize)\cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf16 \cb3 ## Set up/downregulation\cf2 \cb1 \
+\pard\pardeftab720\sl340\partightenfactor0
+\cf2 \cb3 dot_df.x1$type = \cf4 "upregulated"\cf2 \cb1 \
+\cb3 dot_df.x1$type[dot_df.x1$NES < \cf20 0\cf2 ] = \cf4 "downregulated"\cf2 \cb1 \
+\cb3 \uc0\u8203 \cb1 \
+\cb3 p <- ggplot(dot_df.x1, aes(x = NES, y = fct_reorder(Description, NES))) + \cb1 \
+\cb3      geom_point(aes(size = count, color = p.adjust)) +\cb1 \
+\cb3      theme_bw(base_size = \cf20 14\cf2 ) +\cb1 \
+\cb3      scale_colour_gradient(low=\cf4 "red"\cf2 ,high=\cf4 "blue"\cf2 ) +\cb1 \
+\cb3      ylab(\cf21 NULL\cf2 ) +\cb1 \
+\cb3      labs(x=\cf4 "Normalized Enrichment Score"\cf2 ,\cb1 \
+\cb3      title=\cf4 \'93H33KO Hallmark Pathway NES from GSEA"\cf2 ) \cb1 \
+}

@@ -1,0 +1,36 @@
+#!/bin/bash
+#SBATCH -J HT-Seq                           			         # job name
+#SBATCH -p super                            				 # select partion from 128GB, 256GB, 384GB, GPU and super
+#SBATCH -N 1                                     			 # number of nodes requested by user
+#SBATCH -t 0-24:00:00                             			 # run time, format: D-H:M:S (max wallclock time)
+#SBATCH -o AlignmentJob_RunInfo.o%j    # standard output file name
+#SBATCH --mail-user=YOUR_NAME@utsouthwestern.edu 		                     # specify an email address
+#SBATCH --mail-type=END                               		 # send email when job status change (start, end, abortion and etc.)
+
+## Load the prerequisite modules
+module load HTSeq/0.6.1 
+module load samtools
+
+ANOTATION="/project/GCRB/shared/Gencode_mouse/release_M5/gencode.vM5.annotation.gtf"
+ALIGNMENT_DIRECTORY="/work/GCRB/s164441/RNA-Seq-p300CBPkd/nodup_files"
+
+prefix='counts'
+mkdir HTSeq
+
+
+for lib in 129_p300-CBPKD_RNASeq_rep1_S11\
+           
+
+
+do
+
+    echo $lib
+    htseq-count \
+    -f bam \
+    -m intersection-nonempty \
+    -i gene_id \
+    -r pos \
+    -s no \
+    $ALIGNMENT_DIRECTORY/$lib.nodup.bam $ANOTATION > ./HTSeq/$prefix.$lib
+done
+
